@@ -14,7 +14,6 @@
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #555; }
         select, input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
         
-        /* Checkbox štýl */
         .checkbox-container { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; background: #eef3ff; padding: 10px; border-radius: 6px; cursor: pointer; border: 1px solid #adc6ff; }
         .checkbox-container input { width: auto; margin: 0; cursor: pointer; }
 
@@ -40,21 +39,20 @@
     <div class="section">
         <label>Zóna / Lokalita:</label>
         <select id="zona" onchange="vypocet()">
-            <option value="35">ZÓNA 1 (do 10 km)</option>
-            <option value="45">ZÓNA 2 (10 - 25 km)</option>
-            <option value="65">ZÓNA 3 (25 - 50 km)</option>
-            <option value="custom">ZÓNA 4 (nad 50 km)</option>
+            <option value="30">ZÓNA 1 (do 10 km)</option>
+            <option value="40">ZÓNA 2 (10 - 30 km)</option>
+            <option value="custom">ZÓNA 3 (nad 30 km)</option>
         </select>
         
         <div id="km_input" style="display:none;">
             <label>Počet km k zákazníkovi (jedna cesta):</label>
-            <input type="number" id="vzdialenost" value="51" oninput="vypocet()">
+            <input type="number" id="vzdialenost" value="31" oninput="vypocet()">
         </div>
     </div>
 
     <div class="section">
         <label>Celková hmotnosť tovaru (kg):</label>
-        <input type="number" id="hmotnost" placeholder="Napr. 800" oninput="vypocet()">
+        <input type="number" id="hmotnost" placeholder="Napr. 1600" oninput="vypocet()">
         
         <label class="checkbox-container">
             <input type="checkbox" id="vytah" onchange="toggleVytah()"> 🏢 Je k dispozícii funkčný výťah?
@@ -73,7 +71,7 @@
     <div class="summary-box">
         <div class="summary-line">
             <span>Cena dopravy:</span>
-            <span><span id="vysledok_doprava">35.00</span> €</span>
+            <span><span id="vysledok_doprava">30.00</span> €</span>
         </div>
         <div class="summary-line">
             <span>Cena vynášky:</span>
@@ -81,7 +79,7 @@
         </div>
         <div class="summary-line">
             <span>CELKOVÁ SUMA:</span>
-            <span><span id="celkova_cena">35.00</span> €</span>
+            <span><span id="celkova_cena">30.00</span> €</span>
         </div>
     </div>
     
@@ -96,20 +94,16 @@
             <th>Príklady lokalít</th>
         </tr>
         <tr>
-            <td><b>ZÓNA 1</b></td>
-            <td>Banská Bystrica, Badín, Malachov, Rakytovce, Nemce, Selce, Šalková</td>
+            <td><b>ZÓNA 1</b><br><small>(do 10 km)</small></td>
+            <td>Banská Bystrica, Badín, Vlkanová, Malachov, Rakytovce, Nemce, Selce, Šalková, Hronsek, Mičiná</td>
         </tr>
         <tr>
-            <td><b>ZÓNA 2</b></td>
-            <td>Zvolen, Sliač, Slov. Ľupča, Kováčová, Sielnica, Staré Hory, Harmanec, Brusno, Králiky</td>
+            <td><b>ZÓNA 2</b><br><small>(10-30 km)</small></td>
+            <td>Zvolen, Sliač, Slov. Ľupča, Kováčová, Sielnica, Staré Hory, Harmanec, Poniky, Brusno, Králiky, V. Lúka</td>
         </tr>
         <tr>
-            <td><b>ZÓNA 3</b></td>
-            <td>Breznica, Detva, Žiar nad Hronom, Krupina, Brezno</td>
-        </tr>
-        <tr>
-            <td><b>ZÓNA 4</b></td>
-            <td>Ostatné lokality (nad 50 km)</td>
+            <td><b>ZÓNA 3</b><br><small>(nad 30 km)</small></td>
+            <td>Ostatné lokality (účtuje sa cesta tam)</td>
         </tr>
     </table>
 
@@ -158,17 +152,12 @@ function vypocet() {
     let cenaVynasky = 0;
     if (hmotnost > 0) {
         if (jeVytah) {
-            // Výťah = fixne ako 2. poschodie (baliky * 2), minimálne 30 €
+            // Výťah = fixne ako 2. poschodie (baliky * 2€), minimálne 30 €
             cenaVynasky = Math.max(30, (baliky * 2));
         } else {
-            // Ručná vynáška po schodoch
-            if (poschodie === 0) {
-                // Prízemie (bez schodov) - minimálny manipulačný poplatok
-                cenaVynasky = 30;
-            } else {
-                // Schody (baliky * poschodie), minimálne 30 €
-                cenaVynasky = Math.max(30, (baliky * poschodie));
-            }
+            // Schody: baliky * poschodie * 1€, minimálne 30 €
+            // Ak je poschodie 0, berie sa minimálny poplatok 30 €
+            cenaVynasky = Math.max(30, (baliky * poschodie));
         }
     }
 
